@@ -1,0 +1,178 @@
+@startuml
+title <size:24>Dynamic View: Pizzaco Order Service - Order API</size>\n<size:24>How POST /orders runs. Note that the aggregate is constructed three times before it is saved once, and that three of these steps reach systems that are only simulated.</size>
+
+set separator none
+!pragma teoz true
+hide stereotype
+
+<style>
+  root {
+    BackgroundColor: #ffffff;
+    FontColor: #444444;
+  }
+  // Element,Component,Adapter
+  .Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcg== {
+    BackgroundColor: #85bbf0;
+    LineColor: #5d82a8;
+    LineStyle: 0;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #000000;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Component,Adapter,Simulated
+  .Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcixTaW11bGF0ZWQ= {
+    BackgroundColor: #b0b0b0;
+    LineColor: #7b7b7b;
+    LineStyle: 10-10;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Component,Domain
+  .Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu {
+    BackgroundColor: #f2c14e;
+    LineColor: #a98736;
+    LineStyle: 0;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #000000;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Component,UseCase
+  .Element-RWxlbWVudCxDb21wb25lbnQsVXNlQ2FzZQ== {
+    BackgroundColor: #6fcf97;
+    LineColor: #4d9069;
+    LineStyle: 0;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #000000;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Container,Database,Ephemeral
+  .Element-RWxlbWVudCxDb250YWluZXIsRGF0YWJhc2UsRXBoZW1lcmFs {
+    BackgroundColor: #438dd5;
+    LineColor: #2e6295;
+    LineStyle: 10-10;
+    LineThickness: 2;
+    FontColor: #2e6295;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Person
+  .Element-RWxlbWVudCxQZXJzb24= {
+    BackgroundColor: #08427b;
+    LineColor: #052e56;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #052e56;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Software System,External,Simulated
+  .Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0sRXh0ZXJuYWwsU2ltdWxhdGVk {
+    BackgroundColor: #b0b0b0;
+    LineColor: #7b7b7b;
+    LineStyle: 10-10;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Relationship
+  .Relationship-UmVsYXRpb25zaGlw {
+    LineThickness: 2;
+    LineStyle: 10-10;
+    LineColor: #444444;
+    FontColor: #444444;
+    FontSize: 24;
+    MaximumWidth: 200;
+  }
+  // Order API
+  .Boundary-T3JkZXIgQVBJ {
+    BackgroundColor: #ffffff;
+    LineColor: #2e6295;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #438dd5;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+  }
+  // Pizzaco Order Service
+  .Boundary-UGl6emFjbyBPcmRlciBTZXJ2aWNl {
+    BackgroundColor: #ffffff;
+    LineColor: #0b4884;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #1168bd;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+  }
+</style>
+
+actor "Customer\n<size:16>[Person]</size>" as Customer <<Element-RWxlbWVudCxQZXJzb24=>>
+box "Pizzaco Order Service\n<size:16>[Software System]</size>" <<Boundary-UGl6emFjbyBPcmRlciBTZXJ2aWNl>>
+  box "Order API\n<size:16>[Container: Java 21 / Spring Boot 3]</size>" <<Boundary-T3JkZXIgQVBJ>>
+    participant "Pizza Web Controller\n<size:16>[Component: Spring @RestController]</size>" as PizzacoOrderService.OrderAPI.PizzaWebController <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcg==>>
+    participant "Place Order Service\n<size:16>[Component: Plain Java, no Spring]</size>" as PizzacoOrderService.OrderAPI.PlaceOrderService <<Element-RWxlbWVudCxDb21wb25lbnQsVXNlQ2FzZQ==>>
+    participant "Order Validation Service\n<size:16>[Component: Domain service]</size>" as PizzacoOrderService.OrderAPI.OrderValidationService <<Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu>>
+    participant "Google Maps ETA Adapter\n<size:16>[Component: Spring @Component]</size>" as PizzacoOrderService.OrderAPI.GoogleMapsETAAdapter <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcixTaW11bGF0ZWQ=>>
+    participant "Order Pricing Service\n<size:16>[Component: Domain service]</size>" as PizzacoOrderService.OrderAPI.OrderPricingService <<Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu>>
+    participant "PizzaOrder Aggregate\n<size:16>[Component: Plain Java + value objects]</size>" as PizzacoOrderService.OrderAPI.PizzaOrderAggregate <<Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu>>
+    participant "Delivery Fee Calculator\n<size:16>[Component: Domain service]</size>" as PizzacoOrderService.OrderAPI.DeliveryFeeCalculator <<Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu>>
+    participant "Stripe Payment Adapter\n<size:16>[Component: Spring @Component]</size>" as PizzacoOrderService.OrderAPI.StripePaymentAdapter <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcixTaW11bGF0ZWQ=>>
+    participant "Order Repository\n<size:16>[Component: Spring @Component + Jackson]</size>" as PizzacoOrderService.OrderAPI.OrderRepository <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcg==>>
+    participant "Order JPA Repository\n<size:16>[Component: Spring Data JPA]</size>" as PizzacoOrderService.OrderAPI.OrderJPARepository <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcg==>>
+    participant "Firebase Notification Adapter\n<size:16>[Component: Spring @Component]</size>" as PizzacoOrderService.OrderAPI.FirebaseNotificationAdapter <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcixTaW11bGF0ZWQ=>>
+    participant "Get Order Service\n<size:16>[Component: Plain Java, no Spring]</size>" as PizzacoOrderService.OrderAPI.GetOrderService <<Element-RWxlbWVudCxDb21wb25lbnQsVXNlQ2FzZQ==>>
+  end box
+  database "Order Store\n<size:16>[Container: H2 (in-memory)]</size>" as PizzacoOrderService.OrderStore <<Element-RWxlbWVudCxDb250YWluZXIsRGF0YWJhc2UsRXBoZW1lcmFs>>
+end box
+participant "Google Maps Platform\n<size:16>[Software System]</size>" as GoogleMapsPlatform <<Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0sRXh0ZXJuYWwsU2ltdWxhdGVk>>
+participant "Stripe\n<size:16>[Software System]</size>" as Stripe <<Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0sRXh0ZXJuYWwsU2ltdWxhdGVk>>
+participant "Firebase Cloud Messaging\n<size:16>[Software System]</size>" as FirebaseCloudMessaging <<Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0sRXh0ZXJuYWwsU2ltdWxhdGVk>>
+
+Customer -> PizzacoOrderService.OrderAPI.PizzaWebController <<Relationship-UmVsYXRpb25zaGlw>> : 1: POST /orders with items, address and distance\n<size:16>[JSON/HTTPS]</size>
+PizzacoOrderService.OrderAPI.PizzaWebController -> PizzacoOrderService.OrderAPI.PlaceOrderService <<Relationship-UmVsYXRpb25zaGlw>> : 2: placeOrder(command), store address hardcoded\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.PlaceOrderService -> PizzacoOrderService.OrderAPI.OrderValidationService <<Relationship-UmVsYXRpb25zaGlw>> : 3: validate(items, address, contact)\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.PlaceOrderService -> PizzacoOrderService.OrderAPI.GoogleMapsETAAdapter <<Relationship-UmVsYXRpb25zaGlw>> : 4: estimateMinutes(...) via EtaProcessor\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.GoogleMapsETAAdapter -> GoogleMapsPlatform <<Relationship-UmVsYXRpb25zaGlw>> : 5: SIMULATED: no call, returns a hardcoded 30\n<size:16>[SIMULATED]</size>
+PizzacoOrderService.OrderAPI.PlaceOrderService -> PizzacoOrderService.OrderAPI.OrderPricingService <<Relationship-UmVsYXRpb25zaGlw>> : 6: calculateSubtotal(items)\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.PlaceOrderService -> PizzacoOrderService.OrderAPI.PizzaOrderAggregate <<Relationship-UmVsYXRpb25zaGlw>> : 7: submitted(...): a throwaway draft, so the fee rule can see the items\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.PlaceOrderService -> PizzacoOrderService.OrderAPI.OrderPricingService <<Relationship-UmVsYXRpb25zaGlw>> : 8: calculateDeliveryFee(draft, miles)\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.OrderPricingService -> PizzacoOrderService.OrderAPI.DeliveryFeeCalculator <<Relationship-UmVsYXRpb25zaGlw>> : 9: calculateFee: free for 3+ within 5 miles, else 5.00\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.PlaceOrderService -> PizzacoOrderService.OrderAPI.PizzaOrderAggregate <<Relationship-UmVsYXRpb25zaGlw>> : 10: rehydrate(...): a second draft carrying the fee\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.PlaceOrderService -> PizzacoOrderService.OrderAPI.StripePaymentAdapter <<Relationship-UmVsYXRpb25zaGlw>> : 11: processPayment(...) via PaymentProcessor\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.StripePaymentAdapter -> Stripe <<Relationship-UmVsYXRpb25zaGlw>> : 12: SIMULATED: no call, always succeeds\n<size:16>[SIMULATED]</size>
+PizzacoOrderService.OrderAPI.PlaceOrderService -> PizzacoOrderService.OrderAPI.PizzaOrderAggregate <<Relationship-UmVsYXRpb25zaGlw>> : 13: confirm(ref): the only guarded step, Submitted to Confirmed\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.PlaceOrderService -> PizzacoOrderService.OrderAPI.OrderRepository <<Relationship-UmVsYXRpb25zaGlw>> : 14: save(order) via OrderStore\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.OrderRepository -> PizzacoOrderService.OrderAPI.OrderJPARepository <<Relationship-UmVsYXRpb25zaGlw>> : 15: save(OrderEntity), items serialised to JSON\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.OrderJPARepository -> PizzacoOrderService.OrderStore <<Relationship-UmVsYXRpb25zaGlw>> : 16: INSERT\n<size:16>[SQL/JDBC]</size>
+PizzacoOrderService.OrderAPI.PlaceOrderService -> PizzacoOrderService.OrderAPI.FirebaseNotificationAdapter <<Relationship-UmVsYXRpb25zaGlw>> : 17: notifyCustomer(...) via NotificationPort\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.FirebaseNotificationAdapter -> FirebaseCloudMessaging <<Relationship-UmVsYXRpb25zaGlw>> : 18: SIMULATED: no call, logs only\n<size:16>[SIMULATED]</size>
+PizzacoOrderService.OrderAPI.PizzaWebController -> PizzacoOrderService.OrderAPI.GetOrderService <<Relationship-UmVsYXRpb25zaGlw>> : 19: getOrder(id): a second read, PlaceOrderResult is discarded\n<size:16>[In-process]</size>
+PizzacoOrderService.OrderAPI.GetOrderService -> PizzacoOrderService.OrderAPI.OrderRepository <<Relationship-UmVsYXRpb25zaGlw>> : 20: findById(id) via OrderStore\n<size:16>[In-process]</size>
+
+@enduml

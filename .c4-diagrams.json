@@ -1,0 +1,7 @@
+{
+  "tier": 1,
+  "diagramDir": "docs/architecture",
+  "mcp": { "mode": "none" },
+  "lite": { "port": 8080 },
+  "reviewGrill": true
+}

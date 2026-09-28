@@ -1,0 +1,36 @@
+graph LR
+  linkStyle default fill:#ffffff
+
+  subgraph diagram ["Deployment View: Pizzaco Order Service - Proposed Production"]
+    style diagram fill:#ffffff,stroke:#ffffff
+
+    subgraph 77 ["Amazon Web Services"]
+      style 77 fill:#ffffff,stroke:#b2b2b2,color:#999999
+
+      78("<div style='font-weight: bold'>Application Load Balancer</div><div style='font-size: 70%; margin-top: 0px'>[Infrastructure Node: AWS ALB]</div><div style='font-size: 80%; margin-top:10px'>Terminates TLS and routes<br />/orders. Would also carry the<br />authentication the API<br />currently lacks.</div>")
+      style 78 fill:#ffffff,stroke:#b2b2b2,color:#999999
+      subgraph 79 ["Amazon ECS (Fargate)"]
+        style 79 fill:#ffffff,stroke:#b2b2b2,color:#999999
+
+        subgraph 80 ["Order API Task"]
+          style 80 fill:#ffffff,stroke:#b2b2b2,color:#999999
+
+          81("<div style='font-weight: bold'>Order API</div><div style='font-size: 70%; margin-top: 0px'>[Container: Java 21 / Spring Boot 3]</div><div style='font-size: 80%; margin-top:10px'>Spring-free hexagonal core<br />wrapped in web, persistence<br />and integration adapters.<br />Enforced by an ArchUnit test.</div>")
+          style 81 fill:#438dd5,stroke:#2e6295,color:#ffffff
+        end
+
+      end
+
+      subgraph 82 ["Amazon RDS"]
+        style 82 fill:#ffffff,stroke:#b2b2b2,color:#999999
+
+        83[("<div style='font-weight: bold'>Order Store (managed)</div><div style='font-size: 70%; margin-top: 0px'>[Container: PostgreSQL 16]</div><div style='font-size: 80%; margin-top:10px'>PLANNED. The same logical<br />store, durable. Appears only<br />on the proposed deployment<br />view.</div>")]
+        style 83 fill:#ffffff,stroke:#b2b2b2,color:#999999
+      end
+
+    end
+
+    81-. "<div>Would read from and write to</div><div style='font-size: 70%'>[SQL/JDBC]</div>" .->83
+    78-. "<div>Routes order traffic to</div><div style='font-size: 70%'>[JSON/HTTPS]</div>" .->81
+
+  end

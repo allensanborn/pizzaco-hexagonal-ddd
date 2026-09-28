@@ -1,0 +1,194 @@
+@startuml
+title <size:24>Component View: Pizzaco Order Service - Order API</size>\n<size:24>Level 3, the hexagon only. Inbound adapters drive use cases, use cases orchestrate the domain, and outbound adapters satisfy the core's output ports. Actors, externals and wiring are omitted so the seam is the only thing to read.</size>
+
+set separator none
+left to right direction
+skinparam ranksep 80
+skinparam nodesep 15
+hide stereotype
+
+<style>
+  root {
+    BackgroundColor: #ffffff;
+    FontColor: #444444;
+  }
+  // Element,Component,Adapter
+  .Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcg== {
+    BackgroundColor: #85bbf0;
+    LineColor: #5d82a8;
+    LineStyle: 0;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #000000;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Component,Adapter,Simulated
+  .Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcixTaW11bGF0ZWQ= {
+    BackgroundColor: #b0b0b0;
+    LineColor: #7b7b7b;
+    LineStyle: 10-10;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Component,Domain
+  .Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu {
+    BackgroundColor: #f2c14e;
+    LineColor: #a98736;
+    LineStyle: 0;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #000000;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Element,Component,UseCase
+  .Element-RWxlbWVudCxDb21wb25lbnQsVXNlQ2FzZQ== {
+    BackgroundColor: #6fcf97;
+    LineColor: #4d9069;
+    LineStyle: 0;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #000000;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 450;
+  }
+  // Relationship
+  .Relationship-UmVsYXRpb25zaGlw {
+    LineThickness: 2;
+    LineStyle: 10-10;
+    LineColor: #444444;
+    FontColor: #444444;
+    FontSize: 24;
+    MaximumWidth: 200;
+  }
+  // Order API
+  .Boundary-T3JkZXIgQVBJ {
+    BackgroundColor: #ffffff;
+    LineColor: #2e6295;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #438dd5;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+  }
+  // Pizzaco Order Service
+  .Boundary-UGl6emFjbyBPcmRlciBTZXJ2aWNl {
+    BackgroundColor: #ffffff;
+    LineColor: #0b4884;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #1168bd;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+  }
+  // Application / Use Cases (core.application)
+  .Group-QXBwbGljYXRpb24gLyBVc2UgQ2FzZXMgKGNvcmUuYXBwbGljYXRpb24p {
+    BackgroundColor: #ffffff;
+    LineColor: #444444;
+    LineStyle: 2-2;
+    LineThickness: 2;
+    FontColor: #444444;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+  }
+  // Domain (core.domain)
+  .Group-RG9tYWluIChjb3JlLmRvbWFpbik= {
+    BackgroundColor: #ffffff;
+    LineColor: #444444;
+    LineStyle: 2-2;
+    LineThickness: 2;
+    FontColor: #444444;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+  }
+  // Inbound Adapters (infrastructure.web)
+  .Group-SW5ib3VuZCBBZGFwdGVycyAoaW5mcmFzdHJ1Y3R1cmUud2ViKQ== {
+    BackgroundColor: #ffffff;
+    LineColor: #444444;
+    LineStyle: 2-2;
+    LineThickness: 2;
+    FontColor: #444444;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+  }
+  // Outbound Adapters (infrastructure)
+  .Group-T3V0Ym91bmQgQWRhcHRlcnMgKGluZnJhc3RydWN0dXJlKQ== {
+    BackgroundColor: #ffffff;
+    LineColor: #444444;
+    LineStyle: 2-2;
+    LineThickness: 2;
+    FontColor: #444444;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+  }
+</style>
+
+rectangle "Pizzaco Order Service\n<size:16>[Software System]</size>" <<Boundary-UGl6emFjbyBPcmRlciBTZXJ2aWNl>> {
+  rectangle "Order API\n<size:16>[Container: Java 21 / Spring Boot 3]</size>" <<Boundary-T3JkZXIgQVBJ>> {
+    rectangle "Application / Use Cases (core.application)" <<Group-QXBwbGljYXRpb24gLyBVc2UgQ2FzZXMgKGNvcmUuYXBwbGljYXRpb24p>> as group1 {
+      rectangle "==Place Order Service\n<size:16>[Component: Plain Java, no Spring]</size>\n\nPlaceOrderUseCase: validate, ETA, price, charge, confirm, persist, notify." <<Element-RWxlbWVudCxDb21wb25lbnQsVXNlQ2FzZQ==>> as PizzacoOrderService.OrderAPI.PlaceOrderService
+      rectangle "==Progress Order Service\n<size:16>[Component: Plain Java, no Spring]</size>\n\nProgressOrderUseCase: drives the guarded lifecycle transitions." <<Element-RWxlbWVudCxDb21wb25lbnQsVXNlQ2FzZQ==>> as PizzacoOrderService.OrderAPI.ProgressOrderService
+      rectangle "==Get Order Service\n<size:16>[Component: Plain Java, no Spring]</size>\n\nGetOrderUseCase: flattens the aggregate into an OrderView." <<Element-RWxlbWVudCxDb21wb25lbnQsVXNlQ2FzZQ==>> as PizzacoOrderService.OrderAPI.GetOrderService
+    }
+
+    rectangle "Domain (core.domain)" <<Group-RG9tYWluIChjb3JlLmRvbWFpbik=>> as group2 {
+      rectangle "==PizzaOrder Aggregate\n<size:16>[Component: Plain Java + value objects]</size>\n\nImmutable aggregate root. Owns the lifecycle invariants." <<Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu>> as PizzacoOrderService.OrderAPI.PizzaOrderAggregate
+      rectangle "==Order Validation Service\n<size:16>[Component: Domain service]</size>\n\nRejects empty items, bad quantities, missing address or contact." <<Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu>> as PizzacoOrderService.OrderAPI.OrderValidationService
+      rectangle "==Order Pricing Service\n<size:16>[Component: Domain service]</size>\n\nSums line totals; delegates the delivery fee." <<Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu>> as PizzacoOrderService.OrderAPI.OrderPricingService
+      rectangle "==Delivery Fee Calculator\n<size:16>[Component: Domain service]</size>\n\nFree delivery for 3+ pizzas within 5 miles, else a flat 5.00." <<Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu>> as PizzacoOrderService.OrderAPI.DeliveryFeeCalculator
+    }
+
+    rectangle "Inbound Adapters (infrastructure.web)" <<Group-SW5ib3VuZCBBZGFwdGVycyAoaW5mcmFzdHJ1Y3R1cmUud2ViKQ==>> as group3 {
+      rectangle "==Pizza Web Controller\n<size:16>[Component: Spring @RestController]</size>\n\nExposes POST /orders, POST /orders/{id}/progress and GET /orders/{id}." <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcg==>> as PizzacoOrderService.OrderAPI.PizzaWebController
+    }
+
+    rectangle "Outbound Adapters (infrastructure)" <<Group-T3V0Ym91bmQgQWRhcHRlcnMgKGluZnJhc3RydWN0dXJlKQ==>> as group4 {
+      rectangle "==Order Repository\n<size:16>[Component: Spring @Component + Jackson]</size>\n\nOrderStore port. Maps the aggregate to OrderEntity, items as JSON." <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcg==>> as PizzacoOrderService.OrderAPI.OrderRepository
+      rectangle "==Order JPA Repository\n<size:16>[Component: Spring Data JPA]</size>\n\nSpring Data CRUD on ORDER_ENTITY." <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcg==>> as PizzacoOrderService.OrderAPI.OrderJPARepository
+      rectangle "==Stripe Payment Adapter\n<size:16>[Component: Spring @Component]</size>\n\nPaymentProcessor port. SIMULATED: always succeeds, no HTTP call." <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcixTaW11bGF0ZWQ=>> as PizzacoOrderService.OrderAPI.StripePaymentAdapter
+      rectangle "==Google Maps ETA Adapter\n<size:16>[Component: Spring @Component]</size>\n\nEtaProcessor port. SIMULATED: always 30 minutes, no HTTP call." <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcixTaW11bGF0ZWQ=>> as PizzacoOrderService.OrderAPI.GoogleMapsETAAdapter
+      rectangle "==Firebase Notification Adapter\n<size:16>[Component: Spring @Component]</size>\n\nNotificationPort. SIMULATED: logs only, no HTTP call." <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcixTaW11bGF0ZWQ=>> as PizzacoOrderService.OrderAPI.FirebaseNotificationAdapter
+    }
+
+  }
+
+}
+
+PizzacoOrderService.OrderAPI.PizzaWebController --> PizzacoOrderService.OrderAPI.PlaceOrderService <<Relationship-UmVsYXRpb25zaGlw>> : "Invokes PlaceOrderUseCase\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.PizzaWebController --> PizzacoOrderService.OrderAPI.ProgressOrderService <<Relationship-UmVsYXRpb25zaGlw>> : "Invokes ProgressOrderUseCase\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.PizzaWebController --> PizzacoOrderService.OrderAPI.GetOrderService <<Relationship-UmVsYXRpb25zaGlw>> : "Invokes GetOrderUseCase\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.PlaceOrderService --> PizzacoOrderService.OrderAPI.OrderValidationService <<Relationship-UmVsYXRpb25zaGlw>> : "Validates the command with\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.PlaceOrderService --> PizzacoOrderService.OrderAPI.OrderPricingService <<Relationship-UmVsYXRpb25zaGlw>> : "Prices the order with\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.PlaceOrderService --> PizzacoOrderService.OrderAPI.PizzaOrderAggregate <<Relationship-UmVsYXRpb25zaGlw>> : "Drafts, prices, then confirms\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.OrderPricingService --> PizzacoOrderService.OrderAPI.DeliveryFeeCalculator <<Relationship-UmVsYXRpb25zaGlw>> : "Delegates the fee rule to\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.ProgressOrderService --> PizzacoOrderService.OrderAPI.PizzaOrderAggregate <<Relationship-UmVsYXRpb25zaGlw>> : "Asks for a guarded transition\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.GetOrderService --> PizzacoOrderService.OrderAPI.PizzaOrderAggregate <<Relationship-UmVsYXRpb25zaGlw>> : "Reads state from\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.PlaceOrderService --> PizzacoOrderService.OrderAPI.GoogleMapsETAAdapter <<Relationship-UmVsYXRpb25zaGlw>> : "Estimates ETA via EtaProcessor\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.PlaceOrderService --> PizzacoOrderService.OrderAPI.StripePaymentAdapter <<Relationship-UmVsYXRpb25zaGlw>> : "Charges the total via PaymentProcessor\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.PlaceOrderService --> PizzacoOrderService.OrderAPI.OrderRepository <<Relationship-UmVsYXRpb25zaGlw>> : "Saves via OrderStore\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.PlaceOrderService --> PizzacoOrderService.OrderAPI.FirebaseNotificationAdapter <<Relationship-UmVsYXRpb25zaGlw>> : "Confirms via NotificationPort\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.ProgressOrderService --> PizzacoOrderService.OrderAPI.OrderRepository <<Relationship-UmVsYXRpb25zaGlw>> : "Loads and saves via OrderStore\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.ProgressOrderService --> PizzacoOrderService.OrderAPI.FirebaseNotificationAdapter <<Relationship-UmVsYXRpb25zaGlw>> : "Notifies via NotificationPort\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.GetOrderService --> PizzacoOrderService.OrderAPI.OrderRepository <<Relationship-UmVsYXRpb25zaGlw>> : "Loads via OrderStore\n<size:16>[In-process]</size>"
+PizzacoOrderService.OrderAPI.OrderRepository --> PizzacoOrderService.OrderAPI.PizzaOrderAggregate <<Relationship-UmVsYXRpb25zaGlw>> : "Maps and rehydrates\n<size:16>[Jackson]</size>"
+PizzacoOrderService.OrderAPI.OrderRepository --> PizzacoOrderService.OrderAPI.OrderJPARepository <<Relationship-UmVsYXRpb25zaGlw>> : "Reads and writes entities through\n<size:16>[In-process]</size>"
+
+@enduml

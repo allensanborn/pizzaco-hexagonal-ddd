@@ -1,0 +1,156 @@
+@startuml
+
+set separator none
+hide stereotype
+
+<style>
+  root {
+    BackgroundColor: #ffffff;
+    FontColor: #444444;
+  }
+  // Element,Component,Adapter
+  .Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcg== {
+    BackgroundColor: #85bbf0;
+    LineColor: #5d82a8;
+    LineStyle: 0;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #000000;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Element,Component,Adapter,Simulated
+  .Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcixTaW11bGF0ZWQ= {
+    BackgroundColor: #b0b0b0;
+    LineColor: #7b7b7b;
+    LineStyle: 10-10;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Element,Component,Domain
+  .Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu {
+    BackgroundColor: #f2c14e;
+    LineColor: #a98736;
+    LineStyle: 0;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #000000;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Element,Component,UseCase
+  .Element-RWxlbWVudCxDb21wb25lbnQsVXNlQ2FzZQ== {
+    BackgroundColor: #6fcf97;
+    LineColor: #4d9069;
+    LineStyle: 0;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #000000;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Element,Container,Database,Ephemeral
+  .Element-RWxlbWVudCxDb250YWluZXIsRGF0YWJhc2UsRXBoZW1lcmFs {
+    BackgroundColor: #438dd5;
+    LineColor: #2e6295;
+    LineStyle: 10-10;
+    LineThickness: 2;
+    FontColor: #2e6295;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Element,Person
+  .Element-RWxlbWVudCxQZXJzb24= {
+    BackgroundColor: #08427b;
+    LineColor: #052e56;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #052e56;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Element,Software System,External,Simulated
+  .Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0sRXh0ZXJuYWwsU2ltdWxhdGVk {
+    BackgroundColor: #b0b0b0;
+    LineColor: #7b7b7b;
+    LineStyle: 10-10;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Relationship
+  .Relationship-UmVsYXRpb25zaGlw {
+    LineThickness: 2;
+    LineStyle: 10-10;
+    LineColor: #444444;
+    FontColor: #444444;
+    FontSize: 24;
+    MaximumWidth: 200;
+  }
+  // Order API
+  .Boundary-T3JkZXIgQVBJ {
+    BackgroundColor: #ffffff;
+    LineColor: #2e6295;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #438dd5;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+  }
+  // Pizzaco Order Service
+  .Boundary-UGl6emFjbyBPcmRlciBTZXJ2aWNl {
+    BackgroundColor: #ffffff;
+    LineColor: #0b4884;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #1168bd;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+  }
+  // transparent element for relationships in legend
+  .Element-Transparent {
+    BackgroundColor: transparent;
+    LineColor: transparent;
+    FontColor: transparent;
+  }
+</style>
+
+rectangle "==Component, Adapter" <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcg==>>
+
+rectangle "==Component, Adapter, Simulated" <<Element-RWxlbWVudCxDb21wb25lbnQsQWRhcHRlcixTaW11bGF0ZWQ=>>
+
+rectangle "==Component, Domain" <<Element-RWxlbWVudCxDb21wb25lbnQsRG9tYWlu>>
+
+rectangle "==Component, UseCase" <<Element-RWxlbWVudCxDb21wb25lbnQsVXNlQ2FzZQ==>>
+
+database "==Container, Database, Ephemeral" <<Element-RWxlbWVudCxDb250YWluZXIsRGF0YWJhc2UsRXBoZW1lcmFs>>
+
+person "==Person" <<Element-RWxlbWVudCxQZXJzb24=>>
+
+rectangle "==Software System, External, Simulated" <<Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0sRXh0ZXJuYWwsU2ltdWxhdGVk>>
+
+rectangle "." <<.Element-Transparent>> as 1
+1 --> 1 <<Relationship-UmVsYXRpb25zaGlw>> : "Relationship"
+
+@enduml

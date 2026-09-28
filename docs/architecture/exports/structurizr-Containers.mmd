@@ -1,0 +1,40 @@
+graph TB
+  linkStyle default fill:#ffffff
+
+  subgraph diagram ["Container View: Pizzaco Order Service"]
+    style diagram fill:#ffffff,stroke:#ffffff
+
+    1["<div style='font-weight: bold'>Customer</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div><div style='font-size: 80%; margin-top:10px'>Orders pizza and tracks it.<br />Inferred: the API has no<br />authentication.</div>"]
+    style 1 fill:#08427b,stroke:#052e56,color:#ffffff
+    2["<div style='font-weight: bold'>Store Operator</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div><div style='font-size: 80%; margin-top:10px'>Advances order status by<br />hand. A stand-in for the<br />kitchen and delivery<br />contexts.</div>"]
+    style 2 fill:#6b5b95,stroke:#4a3f68,color:#ffffff
+    23("<div style='font-weight: bold'>Stripe</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>Card payment gateway. Named<br />by the adapter, never<br />contacted.</div>")
+    style 23 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+    24("<div style='font-weight: bold'>Google Maps Platform</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>Travel-time source for the<br />ETA. Named by the adapter,<br />never contacted.</div>")
+    style 24 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+    25("<div style='font-weight: bold'>Firebase Cloud Messaging</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>Push channel for order<br />updates. Named by the<br />adapter, never contacted.</div>")
+    style 25 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+    26("<div style='font-weight: bold'>Kitchen Context</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>PLANNED. Does not exist in<br />this repo. Should own baking<br />progress.</div>")
+    style 26 fill:#ffffff,stroke:#b2b2b2,color:#999999
+    27("<div style='font-weight: bold'>Delivery Context</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>PLANNED. Does not exist in<br />this repo. Should own the<br />courier.</div>")
+    style 27 fill:#ffffff,stroke:#b2b2b2,color:#999999
+
+    subgraph 3 ["Pizzaco Order Service"]
+      style 3 fill:#ffffff,stroke:#0b4884,color:#0b4884
+
+      21[("<div style='font-weight: bold'>Order Store</div><div style='font-size: 70%; margin-top: 0px'>[Container: H2 (in-memory)]</div><div style='font-size: 80%; margin-top:10px'>One denormalised row per<br />order, items as JSON.<br />In-memory: lost on restart.</div>")]
+      style 21 fill:#438dd5,stroke:#2e6295,color:#ffffff
+      4("<div style='font-weight: bold'>Order API</div><div style='font-size: 70%; margin-top: 0px'>[Container: Java 21 / Spring Boot 3]</div><div style='font-size: 80%; margin-top:10px'>Spring-free hexagonal core<br />wrapped in web, persistence<br />and integration adapters.<br />Enforced by an ArchUnit test.</div>")
+      style 4 fill:#438dd5,stroke:#2e6295,color:#ffffff
+    end
+
+    1-. "<div>Places an order, then polls<br />its status</div><div style='font-size: 70%'>[JSON/HTTPS]</div>" .->4
+    2-. "<div>Advances the order lifecycle<br />by hand</div><div style='font-size: 70%'>[JSON/HTTPS]</div>" .->4
+    4-. "<div>Reads from and writes to</div><div style='font-size: 70%'>[SQL/JDBC]</div>" .->21
+    4-. "<div>Would authorise payment<br />against</div><div style='font-size: 70%'>[SIMULATED]</div>" .->23
+    4-. "<div>Would request travel time<br />from</div><div style='font-size: 70%'>[SIMULATED]</div>" .->24
+    4-. "<div>Would push the update to</div><div style='font-size: 70%'>[SIMULATED]</div>" .->25
+    26-. "<div>Should report Baking and<br />ReadyForDelivery to</div><div style='font-size: 70%'>[PLANNED, event-driven]</div>" .->4
+    27-. "<div>Should report OutForDelivery<br />and Delivered to</div><div style='font-size: 70%'>[PLANNED, event-driven]</div>" .->4
+
+  end

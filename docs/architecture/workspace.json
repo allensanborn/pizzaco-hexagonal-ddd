@@ -1,0 +1,1494 @@
+{
+  "configuration" : {
+    "scope" : "SoftwareSystem"
+  },
+  "description" : "C4 model of the Pizzaco order service, a DDD + Hexagonal Architecture showcase. Reverse-engineered from the code; the Simulated and Planned tags mark what the code does NOT do.",
+  "documentation" : { },
+  "id" : 0,
+  "model" : {
+    "deploymentNodes" : [ {
+      "children" : [ {
+        "children" : [ {
+          "containerInstances" : [ {
+            "containerId" : "4",
+            "environment" : "Proposed Production",
+            "id" : "81",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "apiInstance"
+            },
+            "relationships" : [ {
+              "description" : "Would read from and write to",
+              "destinationId" : "83",
+              "id" : "84",
+              "linkedRelationshipId" : "76",
+              "sourceId" : "81",
+              "technology" : "SQL/JDBC"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "description" : "The same Spring Boot container, unchanged.",
+          "environment" : "Proposed Production",
+          "id" : "80",
+          "instances" : "3",
+          "name" : "Order API Task",
+          "properties" : {
+            "structurizr.dsl.identifier" : "task"
+          },
+          "tags" : "Element,Deployment Node,Proposed",
+          "technology" : "Docker / Java 21"
+        } ],
+        "description" : "Stateless tasks. Safe to scale out only once the order store is external.",
+        "environment" : "Proposed Production",
+        "id" : "79",
+        "instances" : "1",
+        "name" : "Amazon ECS (Fargate)",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ecs"
+        },
+        "tags" : "Element,Deployment Node,Proposed",
+        "technology" : "ECS Fargate"
+      }, {
+        "containerInstances" : [ {
+          "containerId" : "22",
+          "environment" : "Proposed Production",
+          "id" : "83",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "dbInstance"
+          },
+          "tags" : "Container Instance"
+        } ],
+        "description" : "Managed PostgreSQL, Multi-AZ. REPLACES the embedded in-memory H2 - the application.yaml already runs H2 in PostgreSQL compatibility mode, so this is the intended destination.",
+        "environment" : "Proposed Production",
+        "id" : "82",
+        "instances" : "1",
+        "name" : "Amazon RDS",
+        "properties" : {
+          "structurizr.dsl.identifier" : "rds"
+        },
+        "tags" : "Element,Deployment Node,Proposed",
+        "technology" : "PostgreSQL 16"
+      } ],
+      "description" : "PROPOSED. Nothing below exists in the repo today.",
+      "environment" : "Proposed Production",
+      "id" : "77",
+      "infrastructureNodes" : [ {
+        "description" : "Terminates TLS and routes /orders. Would also carry the authentication the API currently lacks.",
+        "environment" : "Proposed Production",
+        "id" : "78",
+        "name" : "Application Load Balancer",
+        "properties" : {
+          "structurizr.dsl.identifier" : "alb"
+        },
+        "relationships" : [ {
+          "description" : "Routes order traffic to",
+          "destinationId" : "81",
+          "id" : "85",
+          "sourceId" : "78",
+          "tags" : "Relationship",
+          "technology" : "JSON/HTTPS"
+        } ],
+        "tags" : "Element,Infrastructure Node,Proposed",
+        "technology" : "AWS ALB"
+      } ],
+      "instances" : "1",
+      "name" : "Amazon Web Services",
+      "properties" : {
+        "structurizr.dsl.identifier" : "aws"
+      },
+      "tags" : "Element,Deployment Node,Proposed",
+      "technology" : "AWS eu-west-2"
+    } ],
+    "people" : [ {
+      "description" : "Orders pizza and tracks it. Inferred: the API has no authentication.",
+      "id" : "1",
+      "name" : "Customer",
+      "properties" : {
+        "structurizr.dsl.identifier" : "customer"
+      },
+      "relationships" : [ {
+        "description" : "Places an order, then polls its status",
+        "destinationId" : "5",
+        "id" : "28",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "JSON/HTTPS"
+      }, {
+        "description" : "Places an order, then polls its status",
+        "destinationId" : "4",
+        "id" : "29",
+        "linkedRelationshipId" : "28",
+        "sourceId" : "1",
+        "technology" : "JSON/HTTPS"
+      }, {
+        "description" : "Places an order, then polls its status",
+        "destinationId" : "3",
+        "id" : "30",
+        "linkedRelationshipId" : "28",
+        "sourceId" : "1",
+        "technology" : "JSON/HTTPS"
+      } ],
+      "tags" : "Element,Person"
+    }, {
+      "description" : "Advances order status by hand. A stand-in for the kitchen and delivery contexts.",
+      "id" : "2",
+      "name" : "Store Operator",
+      "properties" : {
+        "structurizr.dsl.identifier" : "operator"
+      },
+      "relationships" : [ {
+        "description" : "Advances the order lifecycle by hand",
+        "destinationId" : "5",
+        "id" : "31",
+        "sourceId" : "2",
+        "tags" : "Relationship,Stopgap",
+        "technology" : "JSON/HTTPS"
+      }, {
+        "description" : "Advances the order lifecycle by hand",
+        "destinationId" : "4",
+        "id" : "32",
+        "linkedRelationshipId" : "31",
+        "sourceId" : "2",
+        "technology" : "JSON/HTTPS"
+      }, {
+        "description" : "Advances the order lifecycle by hand",
+        "destinationId" : "3",
+        "id" : "33",
+        "linkedRelationshipId" : "31",
+        "sourceId" : "2",
+        "technology" : "JSON/HTTPS"
+      } ],
+      "tags" : "Element,Person,Stopgap"
+    } ],
+    "softwareSystems" : [ {
+      "containers" : [ {
+        "components" : [ {
+          "description" : "Exposes POST /orders, POST /orders/{id}/progress and GET /orders/{id}.",
+          "documentation" : { },
+          "group" : "Inbound Adapters (infrastructure.web)",
+          "id" : "5",
+          "name" : "Pizza Web Controller",
+          "properties" : {
+            "structurizr.dsl.identifier" : "webController"
+          },
+          "relationships" : [ {
+            "description" : "Invokes PlaceOrderUseCase",
+            "destinationId" : "7",
+            "id" : "34",
+            "sourceId" : "5",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Invokes ProgressOrderUseCase",
+            "destinationId" : "8",
+            "id" : "35",
+            "sourceId" : "5",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Invokes GetOrderUseCase",
+            "destinationId" : "9",
+            "id" : "36",
+            "sourceId" : "5",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component,Adapter",
+          "technology" : "Spring @RestController"
+        }, {
+          "description" : "Maps core exceptions onto 404, 402 and 400.",
+          "documentation" : { },
+          "group" : "Inbound Adapters (infrastructure.web)",
+          "id" : "6",
+          "name" : "Global Exception Handler",
+          "properties" : {
+            "structurizr.dsl.identifier" : "exceptionHandler"
+          },
+          "relationships" : [ {
+            "description" : "Advises, translating escaped exceptions",
+            "destinationId" : "5",
+            "id" : "37",
+            "sourceId" : "6",
+            "tags" : "Relationship",
+            "technology" : "Spring AOP"
+          } ],
+          "tags" : "Element,Component,Adapter",
+          "technology" : "Spring @RestControllerAdvice"
+        }, {
+          "description" : "PlaceOrderUseCase: validate, ETA, price, charge, confirm, persist, notify.",
+          "documentation" : { },
+          "group" : "Application / Use Cases (core.application)",
+          "id" : "7",
+          "name" : "Place Order Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "placeOrder"
+          },
+          "relationships" : [ {
+            "description" : "Validates the command with",
+            "destinationId" : "11",
+            "id" : "38",
+            "sourceId" : "7",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Prices the order with",
+            "destinationId" : "12",
+            "id" : "39",
+            "sourceId" : "7",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Drafts, prices, then confirms",
+            "destinationId" : "10",
+            "id" : "40",
+            "sourceId" : "7",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Estimates ETA via EtaProcessor",
+            "destinationId" : "17",
+            "id" : "44",
+            "sourceId" : "7",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Charges the total via PaymentProcessor",
+            "destinationId" : "16",
+            "id" : "45",
+            "sourceId" : "7",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Saves via OrderStore",
+            "destinationId" : "14",
+            "id" : "46",
+            "sourceId" : "7",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Confirms via NotificationPort",
+            "destinationId" : "18",
+            "id" : "47",
+            "sourceId" : "7",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Stamps placedAt via ClockPort",
+            "destinationId" : "19",
+            "id" : "48",
+            "sourceId" : "7",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component,UseCase",
+          "technology" : "Plain Java, no Spring"
+        }, {
+          "description" : "ProgressOrderUseCase: drives the guarded lifecycle transitions.",
+          "documentation" : { },
+          "group" : "Application / Use Cases (core.application)",
+          "id" : "8",
+          "name" : "Progress Order Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "progressOrder"
+          },
+          "relationships" : [ {
+            "description" : "Asks for a guarded transition",
+            "destinationId" : "10",
+            "id" : "42",
+            "sourceId" : "8",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Loads and saves via OrderStore",
+            "destinationId" : "14",
+            "id" : "49",
+            "sourceId" : "8",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Notifies via NotificationPort",
+            "destinationId" : "18",
+            "id" : "50",
+            "sourceId" : "8",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component,UseCase",
+          "technology" : "Plain Java, no Spring"
+        }, {
+          "description" : "GetOrderUseCase: flattens the aggregate into an OrderView.",
+          "documentation" : { },
+          "group" : "Application / Use Cases (core.application)",
+          "id" : "9",
+          "name" : "Get Order Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "getOrder"
+          },
+          "relationships" : [ {
+            "description" : "Reads state from",
+            "destinationId" : "10",
+            "id" : "43",
+            "sourceId" : "9",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Loads via OrderStore",
+            "destinationId" : "14",
+            "id" : "51",
+            "sourceId" : "9",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component,UseCase",
+          "technology" : "Plain Java, no Spring"
+        }, {
+          "description" : "Immutable aggregate root. Owns the lifecycle invariants.",
+          "documentation" : { },
+          "group" : "Domain (core.domain)",
+          "id" : "10",
+          "name" : "PizzaOrder Aggregate",
+          "properties" : {
+            "structurizr.dsl.identifier" : "pizzaOrder"
+          },
+          "tags" : "Element,Component,Domain",
+          "technology" : "Plain Java + value objects"
+        }, {
+          "description" : "Rejects empty items, bad quantities, missing address or contact.",
+          "documentation" : { },
+          "group" : "Domain (core.domain)",
+          "id" : "11",
+          "name" : "Order Validation Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "validation"
+          },
+          "tags" : "Element,Component,Domain",
+          "technology" : "Domain service"
+        }, {
+          "description" : "Sums line totals; delegates the delivery fee.",
+          "documentation" : { },
+          "group" : "Domain (core.domain)",
+          "id" : "12",
+          "name" : "Order Pricing Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "pricing"
+          },
+          "relationships" : [ {
+            "description" : "Delegates the fee rule to",
+            "destinationId" : "13",
+            "id" : "41",
+            "sourceId" : "12",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component,Domain",
+          "technology" : "Domain service"
+        }, {
+          "description" : "Free delivery for 3+ pizzas within 5 miles, else a flat 5.00.",
+          "documentation" : { },
+          "group" : "Domain (core.domain)",
+          "id" : "13",
+          "name" : "Delivery Fee Calculator",
+          "properties" : {
+            "structurizr.dsl.identifier" : "feeCalc"
+          },
+          "tags" : "Element,Component,Domain",
+          "technology" : "Domain service"
+        }, {
+          "description" : "OrderStore port. Maps the aggregate to OrderEntity, items as JSON.",
+          "documentation" : { },
+          "group" : "Outbound Adapters (infrastructure)",
+          "id" : "14",
+          "name" : "Order Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "orderRepo"
+          },
+          "relationships" : [ {
+            "description" : "Maps and rehydrates",
+            "destinationId" : "10",
+            "id" : "52",
+            "sourceId" : "14",
+            "tags" : "Relationship",
+            "technology" : "Jackson"
+          }, {
+            "description" : "Reads and writes entities through",
+            "destinationId" : "15",
+            "id" : "53",
+            "sourceId" : "14",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component,Adapter",
+          "technology" : "Spring @Component + Jackson"
+        }, {
+          "description" : "Spring Data CRUD on ORDER_ENTITY.",
+          "documentation" : { },
+          "group" : "Outbound Adapters (infrastructure)",
+          "id" : "15",
+          "name" : "Order JPA Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "jpaRepo"
+          },
+          "relationships" : [ {
+            "description" : "Reads from and writes to",
+            "destinationId" : "21",
+            "id" : "54",
+            "sourceId" : "15",
+            "tags" : "Relationship",
+            "technology" : "SQL/JDBC"
+          } ],
+          "tags" : "Element,Component,Adapter",
+          "technology" : "Spring Data JPA"
+        }, {
+          "description" : "PaymentProcessor port. SIMULATED: always succeeds, no HTTP call.",
+          "documentation" : { },
+          "group" : "Outbound Adapters (infrastructure)",
+          "id" : "16",
+          "name" : "Stripe Payment Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "stripeAdapter"
+          },
+          "relationships" : [ {
+            "description" : "Would authorise payment against",
+            "destinationId" : "23",
+            "id" : "56",
+            "sourceId" : "16",
+            "tags" : "Relationship",
+            "technology" : "SIMULATED"
+          } ],
+          "tags" : "Element,Component,Adapter,Simulated",
+          "technology" : "Spring @Component"
+        }, {
+          "description" : "EtaProcessor port. SIMULATED: always 30 minutes, no HTTP call.",
+          "documentation" : { },
+          "group" : "Outbound Adapters (infrastructure)",
+          "id" : "17",
+          "name" : "Google Maps ETA Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "mapsAdapter"
+          },
+          "relationships" : [ {
+            "description" : "Would request travel time from",
+            "destinationId" : "24",
+            "id" : "59",
+            "sourceId" : "17",
+            "tags" : "Relationship",
+            "technology" : "SIMULATED"
+          } ],
+          "tags" : "Element,Component,Adapter,Simulated",
+          "technology" : "Spring @Component"
+        }, {
+          "description" : "NotificationPort. SIMULATED: logs only, no HTTP call.",
+          "documentation" : { },
+          "group" : "Outbound Adapters (infrastructure)",
+          "id" : "18",
+          "name" : "Firebase Notification Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "firebaseAdapter"
+          },
+          "relationships" : [ {
+            "description" : "Would push the update to",
+            "destinationId" : "25",
+            "id" : "62",
+            "sourceId" : "18",
+            "tags" : "Relationship",
+            "technology" : "SIMULATED"
+          } ],
+          "tags" : "Element,Component,Adapter,Simulated",
+          "technology" : "Spring @Component"
+        }, {
+          "description" : "ClockPort, as an Instant::now lambda.",
+          "documentation" : { },
+          "group" : "Outbound Adapters (infrastructure)",
+          "id" : "19",
+          "name" : "Clock Port Bean",
+          "properties" : {
+            "structurizr.dsl.identifier" : "clock"
+          },
+          "tags" : "Element,Component,Adapter",
+          "technology" : "Java method reference"
+        }, {
+          "description" : "The only place Spring touches the core.",
+          "documentation" : { },
+          "group" : "Composition Root (infrastructure.config)",
+          "id" : "20",
+          "name" : "Core Wiring Config",
+          "properties" : {
+            "structurizr.dsl.identifier" : "wiring"
+          },
+          "relationships" : [ {
+            "description" : "Constructs",
+            "destinationId" : "7",
+            "id" : "65",
+            "sourceId" : "20",
+            "tags" : "Relationship,Wiring",
+            "technology" : "Spring bean"
+          }, {
+            "description" : "Constructs",
+            "destinationId" : "8",
+            "id" : "66",
+            "sourceId" : "20",
+            "tags" : "Relationship,Wiring",
+            "technology" : "Spring bean"
+          }, {
+            "description" : "Constructs",
+            "destinationId" : "9",
+            "id" : "67",
+            "sourceId" : "20",
+            "tags" : "Relationship,Wiring",
+            "technology" : "Spring bean"
+          }, {
+            "description" : "Constructs",
+            "destinationId" : "12",
+            "id" : "68",
+            "sourceId" : "20",
+            "tags" : "Relationship,Wiring",
+            "technology" : "Spring bean"
+          }, {
+            "description" : "Constructs",
+            "destinationId" : "11",
+            "id" : "69",
+            "sourceId" : "20",
+            "tags" : "Relationship,Wiring",
+            "technology" : "Spring bean"
+          }, {
+            "description" : "Constructs",
+            "destinationId" : "13",
+            "id" : "70",
+            "sourceId" : "20",
+            "tags" : "Relationship,Wiring",
+            "technology" : "Spring bean"
+          }, {
+            "description" : "Constructs",
+            "destinationId" : "19",
+            "id" : "71",
+            "sourceId" : "20",
+            "tags" : "Relationship,Wiring",
+            "technology" : "Spring bean"
+          } ],
+          "tags" : "Element,Component,Wiring",
+          "technology" : "Spring @Configuration"
+        } ],
+        "description" : "Spring-free hexagonal core wrapped in web, persistence and integration adapters. Enforced by an ArchUnit test.",
+        "documentation" : { },
+        "id" : "4",
+        "name" : "Order API",
+        "properties" : {
+          "structurizr.dsl.identifier" : "api"
+        },
+        "relationships" : [ {
+          "description" : "Reads from and writes to",
+          "destinationId" : "21",
+          "id" : "55",
+          "linkedRelationshipId" : "54",
+          "sourceId" : "4",
+          "technology" : "SQL/JDBC"
+        }, {
+          "description" : "Would authorise payment against",
+          "destinationId" : "23",
+          "id" : "57",
+          "linkedRelationshipId" : "56",
+          "sourceId" : "4",
+          "technology" : "SIMULATED"
+        }, {
+          "description" : "Would request travel time from",
+          "destinationId" : "24",
+          "id" : "60",
+          "linkedRelationshipId" : "59",
+          "sourceId" : "4",
+          "technology" : "SIMULATED"
+        }, {
+          "description" : "Would push the update to",
+          "destinationId" : "25",
+          "id" : "63",
+          "linkedRelationshipId" : "62",
+          "sourceId" : "4",
+          "technology" : "SIMULATED"
+        }, {
+          "description" : "Would read from and write to",
+          "destinationId" : "22",
+          "id" : "76",
+          "sourceId" : "4",
+          "tags" : "Relationship,Planned",
+          "technology" : "SQL/JDBC"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "Java 21 / Spring Boot 3"
+      }, {
+        "description" : "One denormalised row per order, items as JSON. In-memory: lost on restart.",
+        "documentation" : { },
+        "id" : "21",
+        "name" : "Order Store",
+        "properties" : {
+          "structurizr.dsl.identifier" : "db"
+        },
+        "tags" : "Element,Container,Database,Ephemeral",
+        "technology" : "H2 (in-memory)"
+      }, {
+        "description" : "PLANNED. The same logical store, durable. Appears only on the proposed deployment view.",
+        "documentation" : { },
+        "id" : "22",
+        "name" : "Order Store (managed)",
+        "properties" : {
+          "structurizr.dsl.identifier" : "dbTarget"
+        },
+        "tags" : "Element,Container,Database,Planned",
+        "technology" : "PostgreSQL 16"
+      } ],
+      "description" : "Owns the order aggregate from placement through to delivery.",
+      "documentation" : {
+        "sections" : [ {
+          "content" : "# Pizzaco Order Service — architecture notes\n\nThese notes were reverse-engineered from the source at `allensanborn/pizzaco-hexagonal-ddd`.\nThey record detail that would make the diagram boxes unreadable if inlined, and they are\ndeliberate about separating **what the code does** from **what the names imply**.\n\n## The hexagon\n\nThe repo delivers on its central claim. `core` contains no Spring annotations and no\nimports from `infrastructure`, and an ArchUnit test (`HexagonalArchitectureTest`) enforces\nboth. `CoreWiringConfig` is a genuine composition root: it constructs the plain-Java use\ncases and domain services as beans, so the framework touches the core in exactly one file.\n\nPorts are split the way the pattern intends:\n\n| Direction | Port | Implemented by |\n| --- | --- | --- |\n| Inbound | `PlaceOrderUseCase` | `PlaceOrderService` |\n| Inbound | `ProgressOrderUseCase` | `ProgressOrderService` |\n| Inbound | `GetOrderUseCase` | `GetOrderService` |\n| Outbound | `OrderStore` | `OrderRepository` |\n| Outbound | `PaymentProcessor` | `StripePaymentAdapter` |\n| Outbound | `EtaProcessor` | `GoogleMapsEtaAdapter` |\n| Outbound | `NotificationPort` | `FirebaseNotificationAdapter` |\n| Outbound | `ClockPort` | `Instant::now` lambda in `CoreWiringConfig` |\n\n`PizzaOrder` is an immutable aggregate root: every transition returns a new instance and\n`requireCurrentStatus` rejects an illegal source state, so the lifecycle invariant lives in\nthe domain rather than in a service.\n\n## What the diagram marks as Simulated\n\nThree adapters carry the names of real SaaS products but contact nothing. They have no SDK\ndependency, no HTTP client, and no credentials — each logs a line and returns a canned value:\n\n- `StripePaymentAdapter` — always returns success with a random reference. **No failure path\n  is reachable in a running system**, so `PaymentFailedException` and its 402 handler are\n  dead code outside the unit tests.\n- `GoogleMapsEtaAdapter` — always returns 30 minutes, ignoring both addresses.\n- `FirebaseNotificationAdapter` — returns a random message id. Nothing reaches the customer.\n\nThe diagram styles these grey and dashed, and labels the edges \"Would …\", so the picture\ncannot be mistaken for a claim that the integrations exist.\n\n## What the diagram marks as Planned\n\n`Kitchen Context` and `Delivery Context` do not exist in this repo in any form. They appear\nas dotted, near-transparent boxes because the README names them as where status transitions\n*should* come from. Today those transitions arrive instead from an unauthenticated\n`POST /orders/{id}/progress`, which the README calls \"demo progression\" — modelled on the\ndiagram as the **Store Operator**, a stopgap actor in purple.\n\n## Observations worth discussing\n\n1. **The aggregate is built three times per order.** `PlaceOrderService` calls\n   `PizzaOrder.submitted(...)` to make a throwaway draft purely so `DeliveryFeeCalculator`\n   can see the item list, then `PizzaOrder.rehydrate(...)` to make a second draft carrying\n   the fee, then `confirm(...)`. `rehydrate` is a persistence-reconstitution factory being\n   used as a domain mutator.\n2. **The fee rule takes an aggregate it does not need.** `DeliveryFeeCalculator.calculateFee`\n   uses only `order.getItems().size()`; taking `List<PizzaLineItem>` would remove the reason\n   the throwaway draft exists.\n3. **`ClockPort` is bypassed.** `OrderPricingService.now()` calls `Instant.now()` directly.\n   It is unused, but it sits in the domain and defeats the port that exists to keep time out\n   of the core.\n4. **`POST /orders` reads twice.** The controller discards `PlaceOrderResult` and calls\n   `GetOrderUseCase` to build the 201 body — a second database round trip for data it\n   already held.\n5. **The fee rule counts line items, not pizzas.** `items.size() >= 3` ignores\n   `PizzaLineItem.quantity`, so one line item with `quantity: 10` pays full delivery while\n   three single pizzas ride free.\n6. **No transaction boundary.** Neither `PlaceOrderService` nor `ProgressOrderService` is\n   transactional. In `PlaceOrderService` the payment is taken *before* `orderStore.save`, so\n   a persistence failure loses a charged order.\n7. **Persistence is not durable.** H2 in-memory with `ddl-auto=update`; every order is lost\n   on restart. The H2 console is enabled and unsecured.\n8. **Line items are stored as an opaque JSON column**, so no order can be queried by its\n   contents.\n\n## Diagram provenance\n\nGenerated with the `drawing-c4-diagrams` skill from `workspace.dsl` in this directory.\nRegenerate the images with:\n\n```bash\ncd docs/architecture\ndocker run --rm -v \"$PWD:/work\" -w /work structurizr/structurizr validate -workspace workspace.dsl\ndocker run --rm -v \"$PWD:/work\" -w /work structurizr/structurizr export -workspace workspace.dsl -format plantuml -output exports\ncd exports\ndocker run --rm -e PLANTUML_LIMIT_SIZE=16384 -v \"$PWD:/data\" -w /data plantuml/plantuml -tpng \"structurizr-*.puml\"\n```\n",
+          "filename" : "01-overview.md",
+          "format" : "Markdown",
+          "order" : 1,
+          "title" : ""
+        } ]
+      },
+      "id" : "3",
+      "name" : "Pizzaco Order Service",
+      "properties" : {
+        "structurizr.dsl.identifier" : "pizzaco"
+      },
+      "relationships" : [ {
+        "description" : "Would authorise payment against",
+        "destinationId" : "23",
+        "id" : "58",
+        "linkedRelationshipId" : "56",
+        "sourceId" : "3",
+        "technology" : "SIMULATED"
+      }, {
+        "description" : "Would request travel time from",
+        "destinationId" : "24",
+        "id" : "61",
+        "linkedRelationshipId" : "59",
+        "sourceId" : "3",
+        "technology" : "SIMULATED"
+      }, {
+        "description" : "Would push the update to",
+        "destinationId" : "25",
+        "id" : "64",
+        "linkedRelationshipId" : "62",
+        "sourceId" : "3",
+        "technology" : "SIMULATED"
+      } ],
+      "tags" : "Element,Software System"
+    }, {
+      "description" : "Card payment gateway. Named by the adapter, never contacted.",
+      "documentation" : { },
+      "id" : "23",
+      "name" : "Stripe",
+      "properties" : {
+        "structurizr.dsl.identifier" : "stripe"
+      },
+      "tags" : "Element,Software System,External,Simulated"
+    }, {
+      "description" : "Travel-time source for the ETA. Named by the adapter, never contacted.",
+      "documentation" : { },
+      "id" : "24",
+      "name" : "Google Maps Platform",
+      "properties" : {
+        "structurizr.dsl.identifier" : "maps"
+      },
+      "tags" : "Element,Software System,External,Simulated"
+    }, {
+      "description" : "Push channel for order updates. Named by the adapter, never contacted.",
+      "documentation" : { },
+      "id" : "25",
+      "name" : "Firebase Cloud Messaging",
+      "properties" : {
+        "structurizr.dsl.identifier" : "firebase"
+      },
+      "tags" : "Element,Software System,External,Simulated"
+    }, {
+      "description" : "PLANNED. Does not exist in this repo. Should own baking progress.",
+      "documentation" : { },
+      "id" : "26",
+      "name" : "Kitchen Context",
+      "properties" : {
+        "structurizr.dsl.identifier" : "kitchen"
+      },
+      "relationships" : [ {
+        "description" : "Should report Baking and ReadyForDelivery to",
+        "destinationId" : "4",
+        "id" : "72",
+        "sourceId" : "26",
+        "tags" : "Relationship,Planned",
+        "technology" : "PLANNED, event-driven"
+      }, {
+        "description" : "Should report Baking and ReadyForDelivery to",
+        "destinationId" : "3",
+        "id" : "73",
+        "linkedRelationshipId" : "72",
+        "sourceId" : "26",
+        "technology" : "PLANNED, event-driven"
+      } ],
+      "tags" : "Element,Software System,External,Planned"
+    }, {
+      "description" : "PLANNED. Does not exist in this repo. Should own the courier.",
+      "documentation" : { },
+      "id" : "27",
+      "name" : "Delivery Context",
+      "properties" : {
+        "structurizr.dsl.identifier" : "delivery"
+      },
+      "relationships" : [ {
+        "description" : "Should report OutForDelivery and Delivered to",
+        "destinationId" : "4",
+        "id" : "74",
+        "sourceId" : "27",
+        "tags" : "Relationship,Planned",
+        "technology" : "PLANNED, event-driven"
+      }, {
+        "description" : "Should report OutForDelivery and Delivered to",
+        "destinationId" : "3",
+        "id" : "75",
+        "linkedRelationshipId" : "74",
+        "sourceId" : "27",
+        "technology" : "PLANNED, event-driven"
+      } ],
+      "tags" : "Element,Software System,External,Planned"
+    } ]
+  },
+  "name" : "Pizzaco Order Service",
+  "properties" : {
+    "structurizr.inspection.error" : "2",
+    "structurizr.inspection.info" : "0",
+    "structurizr.inspection.ignore" : "0",
+    "structurizr.inspection.warning" : "0"
+  },
+  "views" : {
+    "componentViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 150,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 400,
+        "vertices" : true
+      },
+      "containerId" : "4",
+      "description" : "Level 3, the hexagon only. Inbound adapters drive use cases, use cases orchestrate the domain, and outbound adapters satisfy the core's output ports. Actors, externals and wiring are omitted so the seam is the only thing to read.",
+      "elements" : [ {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "13",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "14",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "16",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "17",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "18",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "ComponentsHexagon",
+      "name" : "Component View: Pizzaco Order Service - Order API",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "34"
+      }, {
+        "id" : "35"
+      }, {
+        "id" : "36"
+      }, {
+        "id" : "38"
+      }, {
+        "id" : "39"
+      }, {
+        "id" : "40"
+      }, {
+        "id" : "41"
+      }, {
+        "id" : "42"
+      }, {
+        "id" : "43"
+      }, {
+        "id" : "44"
+      }, {
+        "id" : "45"
+      }, {
+        "id" : "46"
+      }, {
+        "id" : "47"
+      }, {
+        "id" : "49"
+      }, {
+        "id" : "50"
+      }, {
+        "id" : "51"
+      }, {
+        "id" : "52"
+      }, {
+        "id" : "53"
+      } ]
+    }, {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 150,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 400,
+        "vertices" : true
+      },
+      "containerId" : "4",
+      "description" : "Level 3, full. Everything inside the Order API, plus the actors, data store and external systems it touches. Dotted grey edges are Spring bean construction, not runtime calls.",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "13",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "14",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "16",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "17",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "18",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "19",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "20",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "21",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "23",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "24",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "25",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "Components",
+      "name" : "Component View: Pizzaco Order Service - Order API",
+      "order" : 4,
+      "relationships" : [ {
+        "id" : "28"
+      }, {
+        "id" : "31"
+      }, {
+        "id" : "34"
+      }, {
+        "id" : "35"
+      }, {
+        "id" : "36"
+      }, {
+        "id" : "37"
+      }, {
+        "id" : "38"
+      }, {
+        "id" : "39"
+      }, {
+        "id" : "40"
+      }, {
+        "id" : "41"
+      }, {
+        "id" : "42"
+      }, {
+        "id" : "43"
+      }, {
+        "id" : "44"
+      }, {
+        "id" : "45"
+      }, {
+        "id" : "46"
+      }, {
+        "id" : "47"
+      }, {
+        "id" : "48"
+      }, {
+        "id" : "49"
+      }, {
+        "id" : "50"
+      }, {
+        "id" : "51"
+      }, {
+        "id" : "52"
+      }, {
+        "id" : "53"
+      }, {
+        "id" : "54"
+      }, {
+        "id" : "56"
+      }, {
+        "id" : "59"
+      }, {
+        "id" : "62"
+      }, {
+        "id" : "65"
+      }, {
+        "id" : "66"
+      }, {
+        "id" : "67"
+      }, {
+        "id" : "68"
+      }, {
+        "id" : "69"
+      }, {
+        "id" : "70"
+      }, {
+        "id" : "71"
+      } ]
+    } ],
+    "configuration" : {
+      "styles" : {
+        "elements" : [ {
+          "background" : "#85bbf0",
+          "color" : "#000000",
+          "tag" : "Adapter"
+        }, {
+          "background" : "#85bbf0",
+          "color" : "#000000",
+          "tag" : "Component"
+        }, {
+          "background" : "#438dd5",
+          "color" : "#ffffff",
+          "tag" : "Container"
+        }, {
+          "shape" : "Cylinder",
+          "tag" : "Database"
+        }, {
+          "background" : "#f2c14e",
+          "color" : "#000000",
+          "tag" : "Domain"
+        }, {
+          "border" : "Dashed",
+          "tag" : "Ephemeral"
+        }, {
+          "background" : "#999999",
+          "color" : "#ffffff",
+          "tag" : "External"
+        }, {
+          "background" : "#08427b",
+          "color" : "#ffffff",
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#ffffff",
+          "border" : "Dotted",
+          "color" : "#999999",
+          "opacity" : 40,
+          "tag" : "Planned"
+        }, {
+          "background" : "#ffffff",
+          "border" : "Dotted",
+          "color" : "#999999",
+          "tag" : "Proposed"
+        }, {
+          "background" : "#b0b0b0",
+          "border" : "Dashed",
+          "color" : "#ffffff",
+          "opacity" : 60,
+          "tag" : "Simulated"
+        }, {
+          "background" : "#1168bd",
+          "color" : "#ffffff",
+          "tag" : "Software System"
+        }, {
+          "background" : "#6b5b95",
+          "color" : "#ffffff",
+          "tag" : "Stopgap"
+        }, {
+          "background" : "#6fcf97",
+          "color" : "#000000",
+          "tag" : "UseCase"
+        }, {
+          "background" : "#dddddd",
+          "border" : "Dotted",
+          "color" : "#666666",
+          "tag" : "Wiring"
+        } ],
+        "relationships" : [ {
+          "color" : "#999999",
+          "style" : "Dashed",
+          "tag" : "Planned"
+        }, {
+          "tag" : "Relationship",
+          "thickness" : 2
+        }, {
+          "color" : "#6b5b95",
+          "style" : "Dashed",
+          "tag" : "Stopgap"
+        }, {
+          "color" : "#999999",
+          "style" : "Dotted",
+          "tag" : "Wiring"
+        } ]
+      },
+      "terminology" : { },
+      "themes" : [ "https://static.structurizr.com/themes/default/theme.json" ]
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 150,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : true
+      },
+      "description" : "Level 2, as-built. One Spring Boot deployable plus an in-memory database. Everything else is outside the boundary.",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "21",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "23",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "24",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "25",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "26",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "27",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "Containers",
+      "name" : "Container View: Pizzaco Order Service",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "29"
+      }, {
+        "id" : "32"
+      }, {
+        "id" : "55"
+      }, {
+        "id" : "57"
+      }, {
+        "id" : "60"
+      }, {
+        "id" : "63"
+      }, {
+        "id" : "72"
+      }, {
+        "id" : "74"
+      } ],
+      "softwareSystemId" : "3"
+    } ],
+    "deploymentViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 150,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : true
+      },
+      "description" : "PROPOSED, NOT AS-BUILT. The repo has no Dockerfile, no compose file, no k8s manifests and no Spring profiles, so nothing on this page exists yet. It shows what productionising the current containers would require: an external PostgreSQL in place of the embedded H2, TLS and authentication at the edge, and more than one task.",
+      "elements" : [ {
+        "id" : "77",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "78",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "79",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "80",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "81",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "82",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "83",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "environment" : "Proposed Production",
+      "key" : "ProposedDeployment",
+      "name" : "Deployment View: Pizzaco Order Service - Proposed Production",
+      "order" : 5,
+      "relationships" : [ {
+        "id" : "84"
+      }, {
+        "id" : "85"
+      } ],
+      "softwareSystemId" : "3"
+    } ],
+    "dynamicViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 150,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : true
+      },
+      "description" : "How POST /orders runs. Note that the aggregate is constructed three times before it is saved once, and that three of these steps reach systems that are only simulated.",
+      "elementId" : "4",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "13",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "14",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "16",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "17",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "18",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "21",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "23",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "24",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "25",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "PlaceOrder",
+      "name" : "Dynamic View: Pizzaco Order Service - Order API",
+      "order" : 6,
+      "properties" : {
+        "plantuml.sequenceDiagram" : "true"
+      },
+      "relationships" : [ {
+        "description" : "POST /orders with items, address and distance",
+        "id" : "28",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "placeOrder(command), store address hardcoded",
+        "id" : "34",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "validate(items, address, contact)",
+        "id" : "38",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "estimateMinutes(...) via EtaProcessor",
+        "id" : "44",
+        "order" : "4",
+        "response" : false
+      }, {
+        "description" : "SIMULATED: no call, returns a hardcoded 30",
+        "id" : "59",
+        "order" : "5",
+        "response" : false
+      }, {
+        "description" : "calculateSubtotal(items)",
+        "id" : "39",
+        "order" : "6",
+        "response" : false
+      }, {
+        "description" : "submitted(...): a throwaway draft, so the fee rule can see the items",
+        "id" : "40",
+        "order" : "7",
+        "response" : false
+      }, {
+        "description" : "calculateDeliveryFee(draft, miles)",
+        "id" : "39",
+        "order" : "8",
+        "response" : false
+      }, {
+        "description" : "calculateFee: free for 3+ within 5 miles, else 5.00",
+        "id" : "41",
+        "order" : "9",
+        "response" : false
+      }, {
+        "description" : "rehydrate(...): a second draft carrying the fee",
+        "id" : "40",
+        "order" : "10",
+        "response" : false
+      }, {
+        "description" : "processPayment(...) via PaymentProcessor",
+        "id" : "45",
+        "order" : "11",
+        "response" : false
+      }, {
+        "description" : "SIMULATED: no call, always succeeds",
+        "id" : "56",
+        "order" : "12",
+        "response" : false
+      }, {
+        "description" : "confirm(ref): the only guarded step, Submitted to Confirmed",
+        "id" : "40",
+        "order" : "13",
+        "response" : false
+      }, {
+        "description" : "save(order) via OrderStore",
+        "id" : "46",
+        "order" : "14",
+        "response" : false
+      }, {
+        "description" : "save(OrderEntity), items serialised to JSON",
+        "id" : "53",
+        "order" : "15",
+        "response" : false
+      }, {
+        "description" : "INSERT",
+        "id" : "54",
+        "order" : "16",
+        "response" : false
+      }, {
+        "description" : "notifyCustomer(...) via NotificationPort",
+        "id" : "47",
+        "order" : "17",
+        "response" : false
+      }, {
+        "description" : "SIMULATED: no call, logs only",
+        "id" : "62",
+        "order" : "18",
+        "response" : false
+      }, {
+        "description" : "getOrder(id): a second read, PlaceOrderResult is discarded",
+        "id" : "36",
+        "order" : "19",
+        "response" : false
+      }, {
+        "description" : "findById(id) via OrderStore",
+        "id" : "51",
+        "order" : "20",
+        "response" : false
+      } ]
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 150,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : true
+      },
+      "description" : "Level 1. Grey dashed boxes are integrations the code names but never calls. The two dotted contexts do not exist in this repo at all.",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "23",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "24",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "25",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "26",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "27",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "SystemContext",
+      "name" : "System Context View: Pizzaco Order Service",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "30"
+      }, {
+        "id" : "33"
+      }, {
+        "id" : "58"
+      }, {
+        "id" : "61"
+      }, {
+        "id" : "64"
+      }, {
+        "id" : "73"
+      }, {
+        "id" : "75"
+      } ],
+      "softwareSystemId" : "3"
+    } ]
+  }
+}

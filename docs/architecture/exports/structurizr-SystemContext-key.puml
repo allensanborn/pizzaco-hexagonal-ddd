@@ -1,0 +1,128 @@
+@startuml
+
+set separator none
+hide stereotype
+
+<style>
+  root {
+    BackgroundColor: #ffffff;
+    FontColor: #444444;
+  }
+  // Element,Person
+  .Element-RWxlbWVudCxQZXJzb24= {
+    BackgroundColor: #08427b;
+    LineColor: #052e56;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Element,Person,Stopgap
+  .Element-RWxlbWVudCxQZXJzb24sU3RvcGdhcA== {
+    BackgroundColor: #6b5b95;
+    LineColor: #4a3f68;
+    LineStyle: 0;
+    LineThickness: 2;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Element,Software System
+  .Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0= {
+    BackgroundColor: #1168bd;
+    LineColor: #0b4884;
+    LineStyle: 0;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Element,Software System,External,Planned
+  .Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0sRXh0ZXJuYWwsUGxhbm5lZA== {
+    BackgroundColor: #ffffff;
+    LineColor: #b2b2b2;
+    LineStyle: 2-2;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #999999;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Element,Software System,External,Simulated
+  .Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0sRXh0ZXJuYWwsU2ltdWxhdGVk {
+    BackgroundColor: #b0b0b0;
+    LineColor: #7b7b7b;
+    LineStyle: 10-10;
+    LineThickness: 2;
+    RoundCorner: 20;
+    FontColor: #ffffff;
+    FontSize: 24;
+    HorizontalAlignment: center;
+    Shadowing: 0;
+    MaximumWidth: 200;
+  }
+  // Relationship
+  .Relationship-UmVsYXRpb25zaGlw {
+    LineThickness: 2;
+    LineStyle: 10-10;
+    LineColor: #444444;
+    FontColor: #444444;
+    FontSize: 24;
+    MaximumWidth: 200;
+  }
+  // Relationship,Planned
+  .Relationship-UmVsYXRpb25zaGlwLFBsYW5uZWQ= {
+    LineThickness: 2;
+    LineStyle: 10-10;
+    LineColor: #999999;
+    FontColor: #999999;
+    FontSize: 24;
+    MaximumWidth: 200;
+  }
+  // Relationship,Stopgap
+  .Relationship-UmVsYXRpb25zaGlwLFN0b3BnYXA= {
+    LineThickness: 2;
+    LineStyle: 10-10;
+    LineColor: #6b5b95;
+    FontColor: #6b5b95;
+    FontSize: 24;
+    MaximumWidth: 200;
+  }
+  // transparent element for relationships in legend
+  .Element-Transparent {
+    BackgroundColor: transparent;
+    LineColor: transparent;
+    FontColor: transparent;
+  }
+</style>
+
+person "==Person" <<Element-RWxlbWVudCxQZXJzb24=>>
+
+person "==Person, Stopgap" <<Element-RWxlbWVudCxQZXJzb24sU3RvcGdhcA==>>
+
+rectangle "==Software System" <<Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0=>>
+
+rectangle "==Software System, External, Planned" <<Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0sRXh0ZXJuYWwsUGxhbm5lZA==>>
+
+rectangle "==Software System, External, Simulated" <<Element-RWxlbWVudCxTb2Z0d2FyZSBTeXN0ZW0sRXh0ZXJuYWwsU2ltdWxhdGVk>>
+
+rectangle "." <<.Element-Transparent>> as 1
+1 --> 1 <<Relationship-UmVsYXRpb25zaGlw>> : "Relationship"
+
+rectangle "." <<.Element-Transparent>> as 2
+2 --> 2 <<Relationship-UmVsYXRpb25zaGlwLFBsYW5uZWQ=>> : "Planned"
+
+rectangle "." <<.Element-Transparent>> as 3
+3 --> 3 <<Relationship-UmVsYXRpb25zaGlwLFN0b3BnYXA=>> : "Stopgap"
+
+@enduml

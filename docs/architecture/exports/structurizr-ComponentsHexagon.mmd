@@ -1,0 +1,82 @@
+graph LR
+  linkStyle default fill:#ffffff
+
+  subgraph diagram ["Component View: Pizzaco Order Service - Order API"]
+    style diagram fill:#ffffff,stroke:#ffffff
+
+    subgraph 3 ["Pizzaco Order Service"]
+      style 3 fill:#ffffff,stroke:#0b4884,color:#0b4884
+
+      subgraph 4 ["Order API"]
+        style 4 fill:#ffffff,stroke:#2e6295,color:#2e6295
+
+        subgraph group1 ["Application / Use Cases (core.application)"]
+          style group1 fill:#ffffff,stroke:#cccccc,color:#cccccc,stroke-dasharray:5
+
+          7("<div style='font-weight: bold'>Place Order Service</div><div style='font-size: 70%; margin-top: 0px'>[Component: Plain Java, no Spring]</div><div style='font-size: 80%; margin-top:10px'>PlaceOrderUseCase: validate,<br />ETA, price, charge, confirm,<br />persist, notify.</div>")
+          style 7 fill:#6fcf97,stroke:#4d9069,color:#000000
+          8("<div style='font-weight: bold'>Progress Order Service</div><div style='font-size: 70%; margin-top: 0px'>[Component: Plain Java, no Spring]</div><div style='font-size: 80%; margin-top:10px'>ProgressOrderUseCase: drives<br />the guarded lifecycle<br />transitions.</div>")
+          style 8 fill:#6fcf97,stroke:#4d9069,color:#000000
+          9("<div style='font-weight: bold'>Get Order Service</div><div style='font-size: 70%; margin-top: 0px'>[Component: Plain Java, no Spring]</div><div style='font-size: 80%; margin-top:10px'>GetOrderUseCase: flattens the<br />aggregate into an OrderView.</div>")
+          style 9 fill:#6fcf97,stroke:#4d9069,color:#000000
+        end
+
+        subgraph group2 ["Domain (core.domain)"]
+          style group2 fill:#ffffff,stroke:#cccccc,color:#cccccc,stroke-dasharray:5
+
+          10("<div style='font-weight: bold'>PizzaOrder Aggregate</div><div style='font-size: 70%; margin-top: 0px'>[Component: Plain Java + value objects]</div><div style='font-size: 80%; margin-top:10px'>Immutable aggregate root.<br />Owns the lifecycle<br />invariants.</div>")
+          style 10 fill:#f2c14e,stroke:#a98736,color:#000000
+          11("<div style='font-weight: bold'>Order Validation Service</div><div style='font-size: 70%; margin-top: 0px'>[Component: Domain service]</div><div style='font-size: 80%; margin-top:10px'>Rejects empty items, bad<br />quantities, missing address<br />or contact.</div>")
+          style 11 fill:#f2c14e,stroke:#a98736,color:#000000
+          12("<div style='font-weight: bold'>Order Pricing Service</div><div style='font-size: 70%; margin-top: 0px'>[Component: Domain service]</div><div style='font-size: 80%; margin-top:10px'>Sums line totals; delegates<br />the delivery fee.</div>")
+          style 12 fill:#f2c14e,stroke:#a98736,color:#000000
+          13("<div style='font-weight: bold'>Delivery Fee Calculator</div><div style='font-size: 70%; margin-top: 0px'>[Component: Domain service]</div><div style='font-size: 80%; margin-top:10px'>Free delivery for 3+ pizzas<br />within 5 miles, else a flat<br />5.00.</div>")
+          style 13 fill:#f2c14e,stroke:#a98736,color:#000000
+        end
+
+        subgraph group3 ["Inbound Adapters (infrastructure.web)"]
+          style group3 fill:#ffffff,stroke:#cccccc,color:#cccccc,stroke-dasharray:5
+
+          5("<div style='font-weight: bold'>Pizza Web Controller</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @RestController]</div><div style='font-size: 80%; margin-top:10px'>Exposes POST /orders, POST<br />/orders/{id}/progress and GET<br />/orders/{id}.</div>")
+          style 5 fill:#85bbf0,stroke:#5d82a8,color:#000000
+        end
+
+        subgraph group4 ["Outbound Adapters (infrastructure)"]
+          style group4 fill:#ffffff,stroke:#cccccc,color:#cccccc,stroke-dasharray:5
+
+          14("<div style='font-weight: bold'>Order Repository</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @Component + Jackson]</div><div style='font-size: 80%; margin-top:10px'>OrderStore port. Maps the<br />aggregate to OrderEntity,<br />items as JSON.</div>")
+          style 14 fill:#85bbf0,stroke:#5d82a8,color:#000000
+          15("<div style='font-weight: bold'>Order JPA Repository</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring Data JPA]</div><div style='font-size: 80%; margin-top:10px'>Spring Data CRUD on<br />ORDER_ENTITY.</div>")
+          style 15 fill:#85bbf0,stroke:#5d82a8,color:#000000
+          16("<div style='font-weight: bold'>Stripe Payment Adapter</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @Component]</div><div style='font-size: 80%; margin-top:10px'>PaymentProcessor port.<br />SIMULATED: always succeeds,<br />no HTTP call.</div>")
+          style 16 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+          17("<div style='font-weight: bold'>Google Maps ETA Adapter</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @Component]</div><div style='font-size: 80%; margin-top:10px'>EtaProcessor port. SIMULATED:<br />always 30 minutes, no HTTP<br />call.</div>")
+          style 17 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+          18("<div style='font-weight: bold'>Firebase Notification Adapter</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @Component]</div><div style='font-size: 80%; margin-top:10px'>NotificationPort. SIMULATED:<br />logs only, no HTTP call.</div>")
+          style 18 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+        end
+
+      end
+
+    end
+
+    5-. "<div>Invokes PlaceOrderUseCase</div><div style='font-size: 70%'>[In-process]</div>" .->7
+    5-. "<div>Invokes ProgressOrderUseCase</div><div style='font-size: 70%'>[In-process]</div>" .->8
+    5-. "<div>Invokes GetOrderUseCase</div><div style='font-size: 70%'>[In-process]</div>" .->9
+    7-. "<div>Validates the command with</div><div style='font-size: 70%'>[In-process]</div>" .->11
+    7-. "<div>Prices the order with</div><div style='font-size: 70%'>[In-process]</div>" .->12
+    7-. "<div>Drafts, prices, then confirms</div><div style='font-size: 70%'>[In-process]</div>" .->10
+    12-. "<div>Delegates the fee rule to</div><div style='font-size: 70%'>[In-process]</div>" .->13
+    8-. "<div>Asks for a guarded transition</div><div style='font-size: 70%'>[In-process]</div>" .->10
+    9-. "<div>Reads state from</div><div style='font-size: 70%'>[In-process]</div>" .->10
+    7-. "<div>Estimates ETA via<br />EtaProcessor</div><div style='font-size: 70%'>[In-process]</div>" .->17
+    7-. "<div>Charges the total via<br />PaymentProcessor</div><div style='font-size: 70%'>[In-process]</div>" .->16
+    7-. "<div>Saves via OrderStore</div><div style='font-size: 70%'>[In-process]</div>" .->14
+    7-. "<div>Confirms via NotificationPort</div><div style='font-size: 70%'>[In-process]</div>" .->18
+    8-. "<div>Loads and saves via<br />OrderStore</div><div style='font-size: 70%'>[In-process]</div>" .->14
+    8-. "<div>Notifies via NotificationPort</div><div style='font-size: 70%'>[In-process]</div>" .->18
+    9-. "<div>Loads via OrderStore</div><div style='font-size: 70%'>[In-process]</div>" .->14
+    14-. "<div>Maps and rehydrates</div><div style='font-size: 70%'>[Jackson]</div>" .->10
+    14-. "<div>Reads and writes entities<br />through</div><div style='font-size: 70%'>[In-process]</div>" .->15
+
+  end

@@ -1,0 +1,105 @@
+graph LR
+  linkStyle default fill:#ffffff
+
+  subgraph diagram ["Dynamic View: Pizzaco Order Service - Order API"]
+    style diagram fill:#ffffff,stroke:#ffffff
+
+    1["<div style='font-weight: bold'>Customer</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div><div style='font-size: 80%; margin-top:10px'>Orders pizza and tracks it.<br />Inferred: the API has no<br />authentication.</div>"]
+    style 1 fill:#08427b,stroke:#052e56,color:#ffffff
+
+    23("<div style='font-weight: bold'>Stripe</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>Card payment gateway. Named<br />by the adapter, never<br />contacted.</div>")
+    style 23 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+    24("<div style='font-weight: bold'>Google Maps Platform</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>Travel-time source for the<br />ETA. Named by the adapter,<br />never contacted.</div>")
+    style 24 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+    25("<div style='font-weight: bold'>Firebase Cloud Messaging</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>Push channel for order<br />updates. Named by the<br />adapter, never contacted.</div>")
+    style 25 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+
+    subgraph 3 ["Pizzaco Order Service"]
+      style 3 fill:#ffffff,stroke:#0b4884,color:#0b4884
+
+      subgraph 4 ["Order API"]
+        style 4 fill:#ffffff,stroke:#2e6295,color:#2e6295
+
+        subgraph group1 ["Application / Use Cases (core.application)"]
+          style group1 fill:#ffffff,stroke:#cccccc,color:#cccccc,stroke-dasharray:5
+
+          7("<div style='font-weight: bold'>Place Order Service</div><div style='font-size: 70%; margin-top: 0px'>[Component: Plain Java, no Spring]</div><div style='font-size: 80%; margin-top:10px'>PlaceOrderUseCase: validate,<br />ETA, price, charge, confirm,<br />persist, notify.</div>")
+          style 7 fill:#6fcf97,stroke:#4d9069,color:#000000
+          9("<div style='font-weight: bold'>Get Order Service</div><div style='font-size: 70%; margin-top: 0px'>[Component: Plain Java, no Spring]</div><div style='font-size: 80%; margin-top:10px'>GetOrderUseCase: flattens the<br />aggregate into an OrderView.</div>")
+          style 9 fill:#6fcf97,stroke:#4d9069,color:#000000
+        end
+
+        subgraph group2 ["Domain (core.domain)"]
+          style group2 fill:#ffffff,stroke:#cccccc,color:#cccccc,stroke-dasharray:5
+
+          10("<div style='font-weight: bold'>PizzaOrder Aggregate</div><div style='font-size: 70%; margin-top: 0px'>[Component: Plain Java + value objects]</div><div style='font-size: 80%; margin-top:10px'>Immutable aggregate root.<br />Owns the lifecycle<br />invariants.</div>")
+          style 10 fill:#f2c14e,stroke:#a98736,color:#000000
+          11("<div style='font-weight: bold'>Order Validation Service</div><div style='font-size: 70%; margin-top: 0px'>[Component: Domain service]</div><div style='font-size: 80%; margin-top:10px'>Rejects empty items, bad<br />quantities, missing address<br />or contact.</div>")
+          style 11 fill:#f2c14e,stroke:#a98736,color:#000000
+          12("<div style='font-weight: bold'>Order Pricing Service</div><div style='font-size: 70%; margin-top: 0px'>[Component: Domain service]</div><div style='font-size: 80%; margin-top:10px'>Sums line totals; delegates<br />the delivery fee.</div>")
+          style 12 fill:#f2c14e,stroke:#a98736,color:#000000
+          13("<div style='font-weight: bold'>Delivery Fee Calculator</div><div style='font-size: 70%; margin-top: 0px'>[Component: Domain service]</div><div style='font-size: 80%; margin-top:10px'>Free delivery for 3+ pizzas<br />within 5 miles, else a flat<br />5.00.</div>")
+          style 13 fill:#f2c14e,stroke:#a98736,color:#000000
+        end
+
+        subgraph group3 ["Inbound Adapters (infrastructure.web)"]
+          style group3 fill:#ffffff,stroke:#cccccc,color:#cccccc,stroke-dasharray:5
+
+          5("<div style='font-weight: bold'>Pizza Web Controller</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @RestController]</div><div style='font-size: 80%; margin-top:10px'>Exposes POST /orders, POST<br />/orders/{id}/progress and GET<br />/orders/{id}.</div>")
+          style 5 fill:#85bbf0,stroke:#5d82a8,color:#000000
+        end
+
+        subgraph group4 ["Outbound Adapters (infrastructure)"]
+          style group4 fill:#ffffff,stroke:#cccccc,color:#cccccc,stroke-dasharray:5
+
+          14("<div style='font-weight: bold'>Order Repository</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @Component + Jackson]</div><div style='font-size: 80%; margin-top:10px'>OrderStore port. Maps the<br />aggregate to OrderEntity,<br />items as JSON.</div>")
+          style 14 fill:#85bbf0,stroke:#5d82a8,color:#000000
+          15("<div style='font-weight: bold'>Order JPA Repository</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring Data JPA]</div><div style='font-size: 80%; margin-top:10px'>Spring Data CRUD on<br />ORDER_ENTITY.</div>")
+          style 15 fill:#85bbf0,stroke:#5d82a8,color:#000000
+          16("<div style='font-weight: bold'>Stripe Payment Adapter</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @Component]</div><div style='font-size: 80%; margin-top:10px'>PaymentProcessor port.<br />SIMULATED: always succeeds,<br />no HTTP call.</div>")
+          style 16 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+          17("<div style='font-weight: bold'>Google Maps ETA Adapter</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @Component]</div><div style='font-size: 80%; margin-top:10px'>EtaProcessor port. SIMULATED:<br />always 30 minutes, no HTTP<br />call.</div>")
+          style 17 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+          18("<div style='font-weight: bold'>Firebase Notification Adapter</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @Component]</div><div style='font-size: 80%; margin-top:10px'>NotificationPort. SIMULATED:<br />logs only, no HTTP call.</div>")
+          style 18 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+        end
+
+      end
+
+      21[("<div style='font-weight: bold'>Order Store</div><div style='font-size: 70%; margin-top: 0px'>[Container: H2 (in-memory)]</div><div style='font-size: 80%; margin-top:10px'>One denormalised row per<br />order, items as JSON.<br />In-memory: lost on restart.</div>")]
+      style 21 fill:#438dd5,stroke:#2e6295,color:#ffffff
+    end
+
+    1["<div style='font-weight: bold'>Customer</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div><div style='font-size: 80%; margin-top:10px'>Orders pizza and tracks it.<br />Inferred: the API has no<br />authentication.</div>"]
+    style 1 fill:#08427b,stroke:#052e56,color:#ffffff
+    21[("<div style='font-weight: bold'>Order Store</div><div style='font-size: 70%; margin-top: 0px'>[Container: H2 (in-memory)]</div><div style='font-size: 80%; margin-top:10px'>One denormalised row per<br />order, items as JSON.<br />In-memory: lost on restart.</div>")]
+    style 21 fill:#438dd5,stroke:#2e6295,color:#ffffff
+    23("<div style='font-weight: bold'>Stripe</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>Card payment gateway. Named<br />by the adapter, never<br />contacted.</div>")
+    style 23 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+    24("<div style='font-weight: bold'>Google Maps Platform</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>Travel-time source for the<br />ETA. Named by the adapter,<br />never contacted.</div>")
+    style 24 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+    25("<div style='font-weight: bold'>Firebase Cloud Messaging</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div><div style='font-size: 80%; margin-top:10px'>Push channel for order<br />updates. Named by the<br />adapter, never contacted.</div>")
+    style 25 fill:#b0b0b0,stroke:#7b7b7b,color:#ffffff
+
+    1-. "<div>1. POST /orders with items,<br />address and distance</div><div style='font-size: 70%'>[JSON/HTTPS]</div>" .->5
+    5-. "<div>2. placeOrder(command), store<br />address hardcoded</div><div style='font-size: 70%'>[In-process]</div>" .->7
+    7-. "<div>3. validate(items, address,<br />contact)</div><div style='font-size: 70%'>[In-process]</div>" .->11
+    7-. "<div>4. estimateMinutes(...) via<br />EtaProcessor</div><div style='font-size: 70%'>[In-process]</div>" .->17
+    17-. "<div>5. SIMULATED: no call,<br />returns a hardcoded 30</div><div style='font-size: 70%'>[SIMULATED]</div>" .->24
+    7-. "<div>6. calculateSubtotal(items)</div><div style='font-size: 70%'>[In-process]</div>" .->12
+    7-. "<div>7. submitted(...): a<br />throwaway draft, so the fee<br />rule can see the items</div><div style='font-size: 70%'>[In-process]</div>" .->10
+    7-. "<div>8.<br />calculateDeliveryFee(draft,<br />miles)</div><div style='font-size: 70%'>[In-process]</div>" .->12
+    12-. "<div>9. calculateFee: free for 3+<br />within 5 miles, else 5.00</div><div style='font-size: 70%'>[In-process]</div>" .->13
+    7-. "<div>10. rehydrate(...): a second<br />draft carrying the fee</div><div style='font-size: 70%'>[In-process]</div>" .->10
+    7-. "<div>11. processPayment(...) via<br />PaymentProcessor</div><div style='font-size: 70%'>[In-process]</div>" .->16
+    16-. "<div>12. SIMULATED: no call,<br />always succeeds</div><div style='font-size: 70%'>[SIMULATED]</div>" .->23
+    7-. "<div>13. confirm(ref): the only<br />guarded step, Submitted to<br />Confirmed</div><div style='font-size: 70%'>[In-process]</div>" .->10
+    7-. "<div>14. save(order) via<br />OrderStore</div><div style='font-size: 70%'>[In-process]</div>" .->14
+    14-. "<div>15. save(OrderEntity), items<br />serialised to JSON</div><div style='font-size: 70%'>[In-process]</div>" .->15
+    15-. "<div>16. INSERT</div><div style='font-size: 70%'>[SQL/JDBC]</div>" .->21
+    7-. "<div>17. notifyCustomer(...) via<br />NotificationPort</div><div style='font-size: 70%'>[In-process]</div>" .->18
+    18-. "<div>18. SIMULATED: no call, logs<br />only</div><div style='font-size: 70%'>[SIMULATED]</div>" .->25
+    5-. "<div>19. getOrder(id): a second<br />read, PlaceOrderResult is<br />discarded</div><div style='font-size: 70%'>[In-process]</div>" .->9
+    9-. "<div>20. findById(id) via<br />OrderStore</div><div style='font-size: 70%'>[In-process]</div>" .->14
+
+  end
