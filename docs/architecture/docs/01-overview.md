@@ -52,30 +52,12 @@ diagram as the **Store Operator**, a stopgap actor in purple.
 
 ## Observations worth discussing
 
-1. **The aggregate is built three times per order.** `PlaceOrderService` calls
-   `PizzaOrder.submitted(...)` to make a throwaway draft purely so `DeliveryFeeCalculator`
-   can see the item list, then `PizzaOrder.rehydrate(...)` to make a second draft carrying
-   the fee, then `confirm(...)`. `rehydrate` is a persistence-reconstitution factory being
-   used as a domain mutator.
-2. **The fee rule takes an aggregate it does not need.** `DeliveryFeeCalculator.calculateFee`
-   uses only `order.getItems().size()`; taking `List<PizzaLineItem>` would remove the reason
-   the throwaway draft exists.
-3. **`ClockPort` is bypassed.** `OrderPricingService.now()` calls `Instant.now()` directly.
-   It is unused, but it sits in the domain and defeats the port that exists to keep time out
-   of the core.
-4. **`POST /orders` reads twice.** The controller discards `PlaceOrderResult` and calls
-   `GetOrderUseCase` to build the 201 body — a second database round trip for data it
-   already held.
-5. **The fee rule counts line items, not pizzas.** `items.size() >= 3` ignores
-   `PizzaLineItem.quantity`, so one line item with `quantity: 10` pays full delivery while
-   three single pizzas ride free.
-6. **No transaction boundary.** Neither `PlaceOrderService` nor `ProgressOrderService` is
-   transactional. In `PlaceOrderService` the payment is taken *before* `orderStore.save`, so
-   a persistence failure loses a charged order.
-7. **Persistence is not durable.** H2 in-memory with `ddl-auto=update`; every order is lost
-   on restart. The H2 console is enabled and unsecured.
-8. **Line items are stored as an opaque JSON column**, so no order can be queried by its
-   contents.
+The code review that came out of this modelling exercise lives in
+[`docs/findings/`](../../findings/README.md) — seventeen findings, one file each, severity
+ordered. Three of them are pricing defects confirmed by running the code, and they coexist
+with a passing build.
+
+Start with [the findings index](../../findings/README.md).
 
 ## The seam is built but never used
 
